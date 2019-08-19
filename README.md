@@ -8,11 +8,13 @@ base_feat.append(computeFeatures_baseline(img))
 <p>işlemi yapılır. computeFeatures fonksiyonunda resim ilk önce RGB to Gray işlemine tabii 
 tutulur . Sonrasında SİFT algoritması ile keypoint ve descriptorlar bulunur . Daha sonrasında 
 da resimleri birbirinden ayıran özellik olan descriptorlar döndürülür.
- 
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    sift = cv2.xfeatures2d.SIFT_create(contrastThreshold=0.0)
-    kps, des = sift.detectAndCompute(gray, None)
- 
+
+```python
+gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+sift = cv2.xfeatures2d.SIFT_create(contrastThreshold=0.0)
+kps, des = sift.detectAndCompute(gray, None)
+```
+
 computeFeatures_baseline fonksiyonunda ise resmin RGB halinin her bir channel'ı için histogram hesaplanır .</p> 
 
     rhist, rbins = np.histogram(img[:,:,0], 64, normed=True)
