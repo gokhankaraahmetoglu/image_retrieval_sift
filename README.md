@@ -18,9 +18,9 @@ kps, des = sift.detectAndCompute(gray, None)
 computeFeatures_baseline fonksiyonunda ise resmin RGB halinin her bir channel'ı için histogram hesaplanır .</p> 
 
 ```python
-    rhist, rbins = np.histogram(img[:,:,0], 64, normed=True)
-    ghist, gbins = np.histogram(img[:,:,1], 64, normed=True)
-    bhist, bbins = np.histogram(img[:,:,2], 64, normed=True)
+rhist, rbins = np.histogram(img[:,:,0], 64, normed=True)
+ghist, gbins = np.histogram(img[:,:,1], 64, normed=True)
+bhist, bbins = np.histogram(img[:,:,2], 64, normed=True)
 ```
 
 Daha sonrasında hesaplanan bu histogram değerleri concatenate(rhist,ghist,bhist) ile birleştirilir
@@ -37,8 +37,8 @@ compute Feature kısmını da açıkladıktan sonra esas koda dönecek olursak k
 verilir .
 
 ```python
-    codebook, distortion = kmeans(alldes, k)
-    code, distortion = vq(alldes, codebook) 
+codebook, distortion = kmeans(alldes, k)
+code, distortion = vq(alldes, codebook) 
 ```
 
 k-means uygulanır ve değişkenleri inceleyecek olursak alldes değişkeni feat anlamına gelmekte .
@@ -54,7 +54,7 @@ elemanlarını gezerken
  code, distortion = vq(f, codebook) satırı ile code:gruplanmış descriptorlar , shape=1xdesc sayısı
  olur .Sonrasında da gruplanmış desc'lerin k değişkeni ile birlikte histogramı çıkarlır.
  ```python
-     bow_hist, _ = np.histogram(code, k, normed=True)
+bow_hist, _ = np.histogram(code, k, normed=True)
 ```
 ve bow_hist her seferinde bow listesine eklenir . En son reshape işlemleri yapılarak bow.pkl kayıt
 edilir.
@@ -69,7 +69,7 @@ Sorgu kısmında ilk başta soruglanacak resim dosyasından çekilir. Sonrasınd
 sokarız . Bu karşılaştırmalar için bir daha resim çekmeye gerek yoktur . Her şeyi biz pickle
 dosyalarımıza kaydetmiştik zaten. 
 ```python
-    fv = pickle.load(open("bow.pkl", "rb") )
+fv = pickle.load(open("bow.pkl", "rb") )
 ```
 ile bow.pkl dosyamızı yükledik . Sonrasında query image'ın feature'larını hesaplarız ve newfeat
 dizisinde tutarız . Hemen sonrasında ;
@@ -78,17 +78,17 @@ dizisinde tutarız . Hemen sonrasında ;
 ```
 codebook'u yükleriz .
 ```python
-    code, distortion = vq(newfeat, codebook)
+code, distortion = vq(newfeat, codebook)
 ```
 ile newfeat'in k değişkenine göre gruplanmış halini elde ederiz ve code değişkenine atarız. 
 code.shape=1xdesc sayısı 
 ```python
-    bow_hist, _ = np.histogram(code, k, normed=True)
+bow_hist, _ = np.histogram(code, k, normed=True)
 ```
 sonrasında code k değişkeni ile histograma tabii tutulur . bow_hist.shape = 1x50 .
 Böylelikle newfeat'i histograma tabi tuttuk . Sıra reshape edip fv'ye atayıp uzaklık hesaplamakta .
 ```python
-    D = computeDistances(fv)
+D = computeDistances(fv)
 ```
 ile computeDistances fonksiyonunu çağırır ve böylece uzaklığı döndürüp tüm uzaklıkları D listesine
 ekleriz  . Sonrasında argüman sıralaması yaparız ve birinci indisimiz query image olacağından

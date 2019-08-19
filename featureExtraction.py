@@ -1,15 +1,3 @@
-"""
-featureExtraction.py
-
-DO NOT MODIFY ANY CODES IN THIS FILE
-OTHERWISE YOUR RESULTS MAY BE INCORRECTLY EVALUATED! 
-I MODIFIED IT WITH PERMISSION FROM WONG. XD
-
-@author: John See, 2017
-@modified by: Lai Kuan, Wong, 2018
-@modified by: Kun Shun, Goh, 2018
-
-"""
 import os
 import cv2
 import numpy as np
@@ -24,8 +12,6 @@ from computeFeatures import computeFeatures, computeFeatures_baseline
 # EDIT THIS TO YOUR OWN PATH IF DIFFERENT
 # dbpath = 'C:\\Users\\aquas\\Documents\\VIP\\as2\\plantdb'
 dbpath = '/home/gkhnkrhmt/Desktop/images'
-
-##############################################################################
 
 # List of features that stores
 feat = []
@@ -44,16 +30,22 @@ for idx in range(500):
 
     print('Extracting features for image #%d'%idx )
 
+"""
+feat.shape=1x500
+base_feat.shape=1x500
+"""
 # Stack all features together
 alldes = np.vstack(feat)
-
+"""alldes.shape = 4410913x128"""
 k = 50
 
 # Perform K-means clustering
 alldes = np.float32(alldes)      # convert to float, required by kmeans and vq functions
 e0 = time.time()
 codebook, distortion = kmeans(alldes, k)
+"""codebook.shape=kx128 yani 50x128 oluyor. distortion.shape=1 (result döndürüyor?)"""
 code, distortion = vq(alldes, codebook)
+"""code.shape=1xdescriptorsayısı ve dizi elemanları (0,1,2,3... gibi k'ya göre gruplanmış) . distortion.shape=1xdescsayısı (dizi desriptorları tutuyor.)"""
 e1 = time.time()
 print("Time to build {}-cluster codebook from {} images: {} seconds".format(k,alldes.shape[0],e1-e0))
 
@@ -80,9 +72,11 @@ bow = []
 # Get label for each image, and put into a histogram (BoW)
 for f in feat:
     code, distortion = vq(f, codebook)
+    """f'teki descriptorlar gruplanıp code'a yazılır . code.shape=1xdescsayısı"""
     bow_hist, _ = np.histogram(code, k, normed=True)
+    """gruplanmış descriptor'lar alınır ve histograma tabii tutulur. bow_hist.shape= bow_hist.shape=1x50"""
     bow.append(bow_hist)
-    
+
 # Stack them together
 temparr = np.vstack(bow)
 
