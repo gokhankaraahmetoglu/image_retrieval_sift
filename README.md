@@ -106,3 +106,6 @@ alınır ve matplotlib kütphanesi ile ekrana çizdirilir.
 
 - [ ] Plot bow_hist one or more time, and save to results/histogram folder
 - [ ] Add functions like **compute_bow()**
+- [ ] Create bow_not_normalized.pkl without histogram normalization
+- [ ] Add argparser for query and featureExtraction 
+- [ ] Create class called **Features**. Move all the feature computations (bow, tf-idf, ..) to Features class. 
