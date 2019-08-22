@@ -100,3 +100,9 @@ onla kıyaslanır.
 Baseline-feature zaten histogram hesabı ile bulunmuştu. newfeat'in baseline feature'ları da bulunur
 sonra computeDistances'a gönderilir ve gene aynı şekilde argüman sıralaması ile ikinci indis
 alınır ve matplotlib kütphanesi ile ekrana çizdirilir. 
+
+
+## TODO
+
+[] Plot bow_hist one or more time, and save to results/histogram folder
+[] Add functions like **compute_bow()**
