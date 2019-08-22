@@ -104,5 +104,5 @@ alınır ve matplotlib kütphanesi ile ekrana çizdirilir.
 
 ## TODO
 
-[] Plot bow_hist one or more time, and save to results/histogram folder
-[] Add functions like **compute_bow()**
+- [ ] Plot bow_hist one or more time, and save to results/histogram folder
+- [ ] Add functions like **compute_bow()**
