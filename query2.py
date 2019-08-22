@@ -26,9 +26,6 @@ plt.imshow(query_img) , plt.title("Query İmage")
 # Bag-of-word Features
 #====================================================================
 
-featvect = []  # empty list for holding features
-FEtime = np.zeros(500)
-
 # load pickled features
 fv = pickle.load(open("bow.pkl", "rb") )
 print('BoW features loaded')
