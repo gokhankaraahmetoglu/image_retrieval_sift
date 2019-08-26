@@ -1,4 +1,4 @@
-#Dockerfile Kullanımı:
+## Dockerfile Kullanımı:
 Öncelikle projemizi çalıştırmak için interpreter ayarı yapmalıyız. Bunun için de Dockerfile'ımızı build etmeliyiz.
 ````dockerfile
 docker build -t cbir/_withsift docker/
