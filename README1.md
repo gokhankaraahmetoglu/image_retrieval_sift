@@ -1,4 +1,6 @@
-# Dockerfile Kullanımı:
+# Installation
+
+## Docker
 Öncelikle projemizi çalıştırmak için interpreter ayarı yapmalıyız. Bunun için de Dockerfile'ımızı build etmeliyiz.
 ````dockerfile
 docker build -t cbir:sift docker/
@@ -11,6 +13,20 @@ docker run -it --rm -v `pwd`/workspace cbir:sift
 komutu ile **Image'ımızdan** bir Container elde etmiş olduk sonrasında da bu Container'dan bir Volume oluşturup Container'ı 
 silmiş olduk. Projemizde artık "interpreter" olarak interpreter seçeneklerinden Docker sekmesinden Dockerfile için 
 verdiğimiz tag'i seçerek değişiklikleri onaylıyoruz. Böylece projemiz çalışmaya ve debug edilmeye hazır .
+
+# Code
+
+## Feature Extraction (Create Database)
+
+```
+python featureExtraction.py
+```
+
+## Query New Image
+
+```
+
+```
 
 # Kod Anlatımı
 ## Database'teki Dosyalar için Özellik Çıkarımı
