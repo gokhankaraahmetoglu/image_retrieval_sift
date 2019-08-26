@@ -1,12 +1,12 @@
 # Dockerfile Kullanımı:
 Öncelikle projemizi çalıştırmak için interpreter ayarı yapmalıyız. Bunun için de Dockerfile'ımızı build etmeliyiz.
 ````dockerfile
-docker build -t cbir/_withsift docker/
+docker build -t cbir:sift docker/
 ````
 komutu ile Dockerfile'ımız build oldu. Build ettiğimiz Dockerfile artık local makinemizde bir **Image** haline geliyor . 
 Geriye Image'ı run etmek kalıyor . Image'ı run etmek için de run komutuna **Image ID** veya **Image tag** vermeliyiz.
 ```dockerfile
-docker run -it --rm -v pwd/workspace cbir/_withsift 
+docker run -it --rm -v `pwd`/workspace cbir:sift 
 ```
 komutu ile **Image'ımızdan** bir Container elde etmiş olduk sonrasında da bu Container'dan bir Volume oluşturup Container'ı 
 silmiş olduk. Projemizde artık "interpreter" olarak interpreter seçeneklerinden Docker sekmesinden Dockerfile için 
