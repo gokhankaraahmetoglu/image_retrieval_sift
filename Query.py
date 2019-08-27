@@ -45,8 +45,6 @@ class Query:
         closest_distance1 = D[0][nearest_idx[1]]
         closest_dists.append(closest_distance1)
 
-
-
     # TD-IDF Features
     def compute_tfidf_features(self, queryfile, nearest_ids , closest_dists):
         # load pickled features
@@ -78,7 +76,6 @@ class Query:
         nearest_ids.append(nearest_idx[1])
         closest_distance2 = D[0][nearest_idx[1]]
         closest_dists.append(closest_distance2)
-
 
     # Baseline Features
     def compute_baseline_features(self, queryfile, nearest_ids, closest_dists):

@@ -23,13 +23,14 @@ if __name__ == '__main__':
 
     nearest_ids = []
     closest_dists = []
-    fig_bow = query.compute_bow_features(query_img, queryfile , nearest_ids, closest_dists)
 
-    fig_tfid = query.compute_tfidf_features(queryfile, nearest_ids, closest_dists)
+    fig_bow = query.compute_bow_features(query_img, queryfile , nearest_ids, closest_dists )
 
-    fig_baseline = query.compute_baseline_features(queryfile, nearest_ids, closest_dists)
+    fig_tfid = query.compute_tfidf_features(queryfile, nearest_ids, closest_dists )
 
-    save_figs(queryfile,nearest_ids,closest_dists)
+    fig_baseline = query.compute_baseline_features(queryfile, nearest_ids, closest_dists )
+
+    save_figs(queryfile,nearest_ids,closest_dists )
     # ====================================================================
 
     # ====================================================================

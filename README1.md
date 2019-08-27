@@ -132,16 +132,60 @@ pickle.dump(base_feat, open("base.pkl", "wb"))
 Bir önceki aşamada database'deki resimlerin feature'larını çıkarmıştık.Bu aşamada ise "çıkardığımız feature'lara göre
 vereceğimiz **query image**'ın feature'ları birbirine ne kadar benziyor ?" bu sorunun cevabını aramaktayız .
 *Başlangıçta **argparser** ile **query image'ın pathi** verilir ve bu path kullanılarak , Query image'ın **SİFT** ile **keypoint ve 
-descriptor'ları** , ayrıca **"baseline" metodu** ile Query Image'ın **R-G-B histogram değerleri** hesaplanır.
-* Hesaplanan bu değerler birbiriyle kıyaslanır. Uzaklık hesabı yapılır.
+descriptor'ları** , ayrıca **"baseline" metodu** ile Query Image'ın **R-G-B histogram değerleri** hesaplanır. Bir önceki adımdaki
+hesaplarla birebir aynıdır.Burada sadece tüm veri seti yerine sadece bir resmin feature'ları çıkartılır.
+Sıra çıkarılan feature'lar ile pkl olarak kaydettiğimiz verilerin feature'larını kıyaslamaya geldi. 
+* Uzaklık hesabı yapılır. 
 * Uzaklık (benzerlik oranımız)  **cosine similarity** ile hesaplanmaktadır. Cosine Similarity bilmeyen arkadaşlar için
 [inceleyiniz](http://www.selcukbasak.com/download/TurkceDokumanBenzerligi.pdf) dökümanı temel düzeyde yeterli olacaktır. 
 ```python
 D = computeDistances(fv)
 nearest_idx = np.argsort(D[0, :]);
 ```
-* Uzaklık değerlerinin bulunduğu **D** dizisi **argsort** işlemi ile argüman sıralamasına tabii tutulur.Argüman sıralamasına
-tabii tutulmuş dizinin ilk elemanı resmin kendisi olacağından ikinci elemanını alarak query image'a en yakın resmi çekmiş
-oluruz. Sonrasında query'e en yakın fotoğrafın indisi ile fotoğraf matplotlib kütüphanesi yardımı ile ekrana çizdirilir.
-**İşlemler temel olarak bütün karşılaşma adımlarında aynıdır. Bow için aynı işlem adımları , Tfidf için aynı işlem adımları
-ve son olarak baseline için de aynı işlem adımları tekrar edilir.**
+işlemi; D dizisinin **Argsort** işlemi ile indeks sıralaması yapılmasını sağlar ve **nearest_idx** dizisi olarak tutarız. Daha sonrasında ;
+```python
+nearest_ids.append(nearest_idx[1])
+```
+Birbirine en yakın resimler bastırılacağı için **nearest_idx**'in ikinci indisi bir dizide tutulur.Dizide tutmamızın sebebi
+her metodun **featureExtraction**'ı için **nearest_idx**'leri bu dizide tutacağız.Peki neden ikinci indis diye soracak olursanız
+resme en yakın resim kendisi olacağından (insert işlemi yaptırmıştık.) ilk indis resmin kendisidir , bize en yakın olan resim 
+ikinci indis olacaktır. Her resmin uzaklık değerini de plotlib ile figürde yazdıracağımız için bir dizide tutarız.
+```python
+        closest_distance1 = D[0][nearest_idx[1]]
+        closest_dists.append(closest_distance1)
+```        
+closest_dists ile her metodun **featureExtraction**'ı için **closest_distance**'ları bu dizide tutacağız.
+Gerekli tüm parametreleri elde ettikten sonra artık **save_figs** fonksiyonu ile artık figürü çizdirebiliriz.
+**for loop** yapısı incelenecek olursa başta figürü 1 kere oluşturmak için **if i==0** şartı koşulur ve i=0 aşamasında;
+```python
+    fig = plt.figure()
+    for i in range(3):
+        if i ==0:
+            img1 = mpimg.imread(queryfile)
+            a = fig.add_subplot(1, 4, i+1)
+            imgplot_1 = plt.imshow(img1)
+            a.set_title(titles[0])
+```
+Başlangıçta figür oluşturulur. Sonrasında **for** loop üç kere dönecektir . 3 farklı featureExtraction modumuz olduğundan ötürü.
+Başlangıçta **i ==0** durumunda iken ilk olarak query image'ın path'i verilir ve ekrana bastırılır. Sonrasında **subplot** ile figürün
+**(1,4)** boyutta olacağı belirtilir ve **title**'ı verilir. 
+ 
+Yukarıdaki durum sadece başlangıçta çalışacaktır . Tekrarlanacak her adım şu şekilde olacaktır;
+```python
+
+img2 = mpimg.imread("images/" + str(nearest_ids[i]) + ".jpg")
+a = fig.add_subplot(1, 4, i+2)
+plt.xlabel('Distance: ' + str(closest_dists[i]))
+imgplot = plt.imshow(img2)
+a.set_title(titles[i+1])
+```
+En yakın resimler featureExtraction metotlarına gelmeye başlayacaktır artık . Bulduğumuz **nearest_ids**'ten tek tek indislerle
+path'ler elde edilir ve path'ten resim çekilir.Sonrasında bu resim subplot ile ekleneceği belirtilir , **title** ı verilir.
+İşlemler tamamlandığında en son ;
+```python
+    fig.set_size_inches((12, 12), forward=False)
+    plt.savefig("results/mm_model15.png", format="png")
+    plt.show()
+```
+işlemleri uygulanır ve resimlerin size_inches değerleri ayarlanır. **savefig()** ile elde edilen figür kaydedilmiş olur. Sonrasında
+**plt.show()** ile figür çizdirilmiş olur.
