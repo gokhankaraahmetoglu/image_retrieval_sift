@@ -4,6 +4,8 @@ from Query import Query
 
 # EDIT THIS TO YOUR OWN PATH IF DIFFERENT
 # dbpath= 'C:\\Users\\Koh\\Desktop\\1151101808_Assignment-2\\plantdb\\train'
+from utils import save_figs
+
 queryfile = ""
 
 if __name__ == '__main__':
@@ -19,11 +21,15 @@ if __name__ == '__main__':
 
     query_img = query.read_query(queryfile)
 
-    fig_a = query.compute_bow_features(query_img, queryfile)
+    nearest_ids = []
+    closest_dists = []
+    fig_bow = query.compute_bow_features(query_img, queryfile , nearest_ids, closest_dists)
 
-    fig_a = query.compute_tfidf_features(queryfile, fig_a)
+    fig_tfid = query.compute_tfidf_features(queryfile, nearest_ids, closest_dists)
 
-    query.compute_baseline_features(queryfile, fig_a)
+    fig_baseline = query.compute_baseline_features(queryfile, nearest_ids, closest_dists)
+
+    save_figs(queryfile,nearest_ids,closest_dists)
     # ====================================================================
 
     # ====================================================================

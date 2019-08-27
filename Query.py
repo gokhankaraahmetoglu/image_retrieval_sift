@@ -17,7 +17,7 @@ class Query:
         return query_img
 
     # Bag-of-word Features
-    def compute_bow_features(self, query_img, queryfile):
+    def compute_bow_features(self, query_img, queryfile,nearest_ids,closest_dists):
         # load pickled features
         fv = pickle.load(open("bow.pkl", "rb"))
         print('BoW features loaded')
@@ -41,22 +41,14 @@ class Query:
 
         # access distances of all images from query image (first image), sort them asc
         nearest_idx = np.argsort(D[0, :]);
+        nearest_ids.append(nearest_idx[1])
         closest_distance1 = D[0][nearest_idx[1]]
-        print(nearest_idx)
-        img1 = mpimg.imread(queryfile)
-        img2 = mpimg.imread("images/" + str(nearest_idx[1]) + ".jpg")
-        fig = plt.figure()
-        a = fig.add_subplot(1, 4, 1)
-        imgplot_1 = plt.imshow(img1)
-        a.set_title('Query')
-        a = fig.add_subplot(1, 4, 2)
-        plt.xlabel('Distance: ' + str(closest_distance1))
-        imgplot = plt.imshow(img2)
-        a.set_title('Bow  Closest')
-        return fig
+        closest_dists.append(closest_distance1)
+
+
 
     # TD-IDF Features
-    def compute_tfidf_features(self, queryfile, fig):
+    def compute_tfidf_features(self, queryfile, nearest_ids , closest_dists):
         # load pickled features
         fv = pickle.load(open("tfidf.pkl", "rb"))
         print('TF-IDF features loaded')
@@ -83,23 +75,14 @@ class Query:
         D = computeDistances(fv)
 
         nearest_idx = np.argsort(D[0, :]);
+        nearest_ids.append(nearest_idx[1])
         closest_distance2 = D[0][nearest_idx[1]]
-        print(nearest_idx)
-        img3 = mpimg.imread("images/" + str(nearest_idx[1]) + ".jpg")
-        a = fig.add_subplot(1, 4, 3)
-        plt.xlabel('Distance: ' + str(closest_distance2))
-        imgplot_2 = plt.imshow(img3)
-        a.set_title('Tf-idf  Closest')
-        return fig
+        closest_dists.append(closest_distance2)
+
 
     # Baseline Features
-    def compute_baseline_features(self, queryfile, fig):
-        """
+    def compute_baseline_features(self, queryfile, nearest_ids, closest_dists):
 
-        :param queryfile:
-        :param fig:
-        :return:
-        """
         # load pickled features
         fv = pickle.load(open("base.pkl", "rb"))
         print('Baseline features loaded')
@@ -118,14 +101,10 @@ class Query:
         D = computeDistances(fv)
 
         # access distances of all images from query image (first image), sort them asc
-        nearest_idx = np.argsort(D[0, :]);
+        nearest_idx = np.argsort(D[0, :])
+        nearest_ids.append(nearest_idx[1])
         closest_distance3 = D[0][nearest_idx[1]]
+        closest_dists.append(closest_distance3)
         print(nearest_idx)
-        img4 = mpimg.imread("images/" + str(nearest_idx[1]) + ".jpg")
-        a = fig.add_subplot(1, 4, 4)
-        imgplot_3 = plt.imshow(img4)
-        a.set_title('Baseline  Closest')
-        plt.xlabel('Distance: ' + str(closest_distance3))
-        fig.set_size_inches((12, 12), forward=False)
-        plt.savefig("results/mm_model13.png", format="png")
-        plt.show()
+        print(nearest_ids)
+        print(closest_dists)
