@@ -19,13 +19,13 @@ verdiğimiz tag'i seçerek değişiklikleri onaylıyoruz. Böylece projemiz çal
 ## Feature Extraction (Create Database)
 
 ```
-python featureExtraction.py
+python3 featureExtraction.py
 ```
 
 ## Query New Image
 
 ```
-
+python3 query2.py --db_path=data/12.jpg
 ```
 
 # Kod Anlatımı
@@ -33,27 +33,99 @@ python featureExtraction.py
 Kodun çalışması için "run" edeceğiniz dosyaların sırası rastgele olmamalıdır.Kodun doğru çalışması için yapılacak
 işlem adımları:
 * Başlangıç olarak "**featureExtraction.py**" dosyasına gidip bu dosyayı "run" 'layabilirsiniz.
+
+"featureExtraction.py" dosyasında **argparser** kullanarak resimleri bulundurduğumuz (database) klasörün **path'ini** elde
+ediyoruz. Sonrasında path kullanılarak database'den resimleri for döngüsü altında çekiyoruz.Databaseden çektiğimiz resimlerin
+**SİFT** ile **keypointlerini** , **descriptorlarını** ve **R-G-B piksellerinin histogramlarını** hesaplıyoruz.
 ```python
-run featureExtraction.py
+feat.append(computeFeatures(img))
+base_feat.append(computeFeatures_baseline(img))
 ```
-"featureExtraction.py" dosyasında **argparser** kullanarak resimleri bulundurduğumuz (database) klasörün **path'ini** elde ediyoruz. Sonrasında path
-kullanılarak database'den resimleri çekiyoruz.Databaseden çektiğimiz resimlerin **SİFT** ile **keypointlerini** , **descriptorlarını**
-ve **R-G-B piksellerinin histogramlarını** hesaplıyoruz.Sonrasında **compute_codebook** fonksiyonu ile verdiğimiz k paramet-resine göre 
-descriptor'ların centroid'lerini döndürüyoruz. Bu döndürülen değerler **codebook.pkl** olarak kaydediliyor. 
-* SİFT ile bulduğumuz descriptor'ları kullanarak benzerlik kıyaslama algoritması olan **BOW(bag of words)** ile hesaplama 
-yapılıyor. Bu hesaplama **k-means** gruplaması ile **histogram** kullanımı içerir.
+**computeFeatures** fonksiyonu SİFT ile keypoint ve descriptor hesabı yapıyor.
+
+**computeFeatures_baseline** fonksiyonu da R-G-B histogramlarını hesaplıyor.
+
+**SIFT ile Hesaplama:**
+```python
+gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+sift = cv2.xfeatures2d.SIFT_create(contrastThreshold=0.0)
+kps, des = sift.detectAndCompute(gray, None)
+```
+Öncesinde resim "gray" yapılarak channel (RGB) tek channel'a inmiş oluyor ve işlem kolaylığı sağlıyor.
+Daha sonrasında ise SİFT hazır fonksiyonu uygulanıyor ve sonucunda "des" değeri **(descriptor)** döndürülüyor.
+Bu değerler feat [] dizisine **append** ediliyor.
+
+**Baseline ile Hesaplama**
+```python
+rhist, rbins = np.histogram(img[:,:,0], 64, normed=True)
+ghist, gbins = np.histogram(img[:,:,1], 64, normed=True)
+bhist, bbins = np.histogram(img[:,:,2], 64, normed=True)
+```
+Alınan resmin R-G-B değerleri direkt olarak histograma tabi tutuluyor ve her histogram sonucu **concatenate** ile
+bir dizide tutuluyor ve dizi return ediliyor.
+Bu değerler base_feat [] dizisine **append** ediliyor.
+
+Bu işlemler için oluşturulmuş feat ve base_feat dizileri 1x500'lük dizilerdir.Ancak tüm elemanları da dizidir.
+**feat[]** dizisi içinde **keypointsizex128**eleman(shape) bulunduran 500 tane diziden oluşmuştur.
+**baseline_feat[]** dizisi içinde **1x192**eleman(shape) bulunduran 500 tane diziden oluşmuştur.
+
+Sonrasında **compute_codebook** fonksiyonu ile ;
+
+```python
+alldes = np.vstack(feat)
+```
+İlk olarak feat dizisi vstack edilerek **tüm keypointlerin sayısı x128**'lik bir shape elde edilir. 
+
+Sonrasında verdiğimiz **k** parametresine göre (k=50) descriptor'ların centroid'lerini döndürüyoruz.Bu işlem
+
+````python
+codebook, _ = kmeans(alldes, k)
+````
+ ile yapılır. Ve **k-means**'ten döndürülen **codebook** değeri **codebook.pkl** olarak kaydedilir.
+ codebook shape olarak **50x128** olup içinde descriptor centroidleri bulundurur.
+  
+* Daha sonrasında SİFT ile bulduğumuz **feat[]** yani descriptor'ları **(keypointx128)** kullanarak benzerlik kıyaslama 
+algoritması olan **BOW(bag of words)** ile hesaplama yapılıyor. Bu hesaplama **k-means** gruplaması ile **histogram** kullanımı içerir.
+İlk önce ;
+```python
+codebook = pickle.load(open("codebook.pkl", "rb"))
+```
+ile **codebook.pkl** değerleri **codebook**'a yüklenir.Sonrasında her **feat[]** dizisi elemanı için
 ````python
  code, distortion = vq(f, codebook)
 ````
-satırında **code**:gruplanmış descriptorları ifade eder ve shape=1xdesc sayısıdır.Sonrasında da gruplanmış descriptor'ların
-**k** değişkeni ile birlikte histogramı çıkarlır. Ve oluşan histogram değerleri bow listesine eklenir ve **bow.pkl** olarak 
+işlemi yapılır. Bu işlemde **code**:gruplanmış descriptorları ifade eder ve shape=1xkeypointsayısı olacaktır.Sonrasında da 
+gruplanmış descriptor'ların **k** değişkeni ile birlikte histogramı çıkarlır. Ve oluşan histogram değerleri bow listesine eklenir ve **bow.pkl** olarak 
 kayıt edilir. 
-* Sıra **TF-İDF** algoritmasında ; bow algoritması ile birbirine çok benzemektedir.Burda **term frequently** durumu söz konusudur.
-Histograma tabii tutulup bow listesine eklenip **bow.pkl** olarak kaydedilen veriler **load** işlemi ile tekrar yüklenir ve 
-yüklenen pickle verileri **transform fonskiyonları** ile tekrar bow fonksiyonu güncellenir ve **tfidf.pkl** olarak kayıt edilir.
-* En son aşama olan **baseline özellikleri** ise en başta hesaplanan **R-G-B histogram değerlerini** dikkate alır ve bu değerleri 
-**base.pkl** olarak kayıt eder . 
+```python
+bow_hist, _ = np.histogram(code, k, normed=True)
+bow.append(bow_hist)
+```
+Bu işlem her bir fotoğraf için yapıldıktan sonra **bow[]** dizisi **vstack** edilerek **bow.pkl** olarak kayıt
+edilir.
 
+* Sıra **TF-İDF** algoritmasında ; bow algoritması ile birbirine çok benzemektedir.Burda **term frequently** durumu söz konusudur.
+Histograma tabii tutulup bow listesine eklenip **bow.pkl** olarak kaydedilen veriler **load** işlemi ile tekrar yüklenir.
+```python
+all_bow = pickle.load(open("bow.pkl", "rb"))
+```
+Sonrasında yüklenen pickle verileri **transform fonskiyonları** ile tekrar bow fonksiyonu güncellenir ve **tfidf.pkl** olarak kayıt edilir.
+```python
+transformer = TfidfTransformer(smooth_idf=True)
+t = transformer.fit_transform(all_bow).toarray()
+
+t = normalize(t, norm='l2', axis=1)
+
+pickle.dump(t, open("tfidf.pkl", "wb"))
+```
+
+* En son aşama olan **baseline özellikleri** ise en başta hesaplanan **R-G-B histogram değerlerini** vstack yapar ve bu değerleri 
+**base.pkl** olarak kayıt eder . 
+```python
+base_feat = np.vstack(base_feat)
+
+pickle.dump(base_feat, open("base.pkl", "wb"))
+```
 **Böylelikle ilk aşama olan Özellik Çıkarımının sonuna gelmiş olduk.**
 
 ## Query Image ile Resim Benzerliği
@@ -64,8 +136,12 @@ descriptor'ları** , ayrıca **"baseline" metodu** ile Query Image'ın **R-G-B h
 * Hesaplanan bu değerler birbiriyle kıyaslanır. Uzaklık hesabı yapılır.
 * Uzaklık (benzerlik oranımız)  **cosine similarity** ile hesaplanmaktadır. Cosine Similarity bilmeyen arkadaşlar için
 [inceleyiniz](http://www.selcukbasak.com/download/TurkceDokumanBenzerligi.pdf) dökümanı temel düzeyde yeterli olacaktır. 
+```python
+D = computeDistances(fv)
+nearest_idx = np.argsort(D[0, :]);
+```
 * Uzaklık değerlerinin bulunduğu **D** dizisi **argsort** işlemi ile argüman sıralamasına tabii tutulur.Argüman sıralamasına
 tabii tutulmuş dizinin ilk elemanı resmin kendisi olacağından ikinci elemanını alarak query image'a en yakın resmi çekmiş
-oluruz.
+oluruz. Sonrasında query'e en yakın fotoğrafın indisi ile fotoğraf matplotlib kütüphanesi yardımı ile ekrana çizdirilir.
 **İşlemler temel olarak bütün karşılaşma adımlarında aynıdır. Bow için aynı işlem adımları , Tfidf için aynı işlem adımları
 ve son olarak baseline için de aynı işlem adımları tekrar edilir.**
