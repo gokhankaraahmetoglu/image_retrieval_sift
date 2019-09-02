@@ -6,6 +6,7 @@ YOUR WORKING FUNCTION for computing pairwise distances between features
 """
 from scipy.spatial import distance
 
+
 # you are allowed to import other Python packages above
 ##########################
 def computeDistances(fv):
@@ -21,11 +22,10 @@ def computeDistances(fv):
     #
     #########################################################################
     # ADD YOUR CODE BELOW THIS LINE
-    
+
     # This is the baseline distance measure: Euclidean (L2) distance
-    D = distance.squareform(distance.pdist(fv, 'cosine') )
-    
-        
+    D = distance.squareform(distance.pdist(fv, 'cosine'))
+
     # END OF YOUR CODE
     #########################################################################
     return D

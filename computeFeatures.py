@@ -8,6 +8,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
+
 # you are allowed to import other Python packages above
 ##########################
 def computeFeatures(img):
@@ -19,17 +20,17 @@ def computeFeatures(img):
     #
     #########################################################################
     # ADD YOUR CODE BELOW THIS LINE
-    
+
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
     sift = cv2.xfeatures2d.SIFT_create(contrastThreshold=0.0)
     kps, des = sift.detectAndCompute(gray, None)
 
     featvect = des
-    
-    
+
     # END OF YOUR CODE
     #########################################################################
-    return featvect 
+    return featvect
+
 
 # Baseline feature extraction
 def computeFeatures_baseline(img):
@@ -41,9 +42,9 @@ def computeFeatures_baseline(img):
     #
     #########################################################################
 
-    rhist, rbins = np.histogram(img[:,:,0], 64, normed=True)
-    ghist, gbins = np.histogram(img[:,:,1], 64, normed=True)
-    bhist, bbins = np.histogram(img[:,:,2], 64, normed=True)
+    rhist, rbins = np.histogram(img[:, :, 0], 64, normed=True)
+    ghist, gbins = np.histogram(img[:, :, 1], 64, normed=True)
+    bhist, bbins = np.histogram(img[:, :, 2], 64, normed=True)
     featvect = np.concatenate((rhist, ghist, bhist))
 
-    return featvect 
+    return featvect

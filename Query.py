@@ -17,7 +17,7 @@ class Query:
         return query_img
 
     # Bag-of-word Features
-    def compute_bow_features(self, query_img, queryfile,nearest_ids,closest_dists):
+    def compute_bow_features(self, query_img, nearest_ids, closest_dists):
         # load pickled features
         fv = pickle.load(open("bow.pkl", "rb"))
         print('BoW features loaded')
@@ -46,7 +46,7 @@ class Query:
         closest_dists.append(closest_distance1)
 
     # TD-IDF Features
-    def compute_tfidf_features(self, queryfile, nearest_ids , closest_dists):
+    def compute_tfidf_features(self, queryfile, nearest_ids, closest_dists):
         # load pickled features
         fv = pickle.load(open("tfidf.pkl", "rb"))
         print('TF-IDF features loaded')
@@ -79,7 +79,6 @@ class Query:
 
     # Baseline Features
     def compute_baseline_features(self, queryfile, nearest_ids, closest_dists):
-
         # load pickled features
         fv = pickle.load(open("base.pkl", "rb"))
         print('Baseline features loaded')

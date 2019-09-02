@@ -4,11 +4,13 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.preprocessing import normalize
 import cv2
-from computeFeatures import computeFeatures,computeFeatures_baseline
+from computeFeatures import computeFeatures, computeFeatures_baseline
 import os
 import matplotlib.pyplot as plt
+
+
 class Features:
-    def input_img(self,dbpath,feat,base_feat):
+    def input_img(self, dbpath, feat, base_feat):
         for idx in range(500):
             # Load and convert image
             img = cv2.imread(os.path.join(dbpath, str(idx + 1) + ".jpg"))
@@ -21,12 +23,13 @@ class Features:
             base_feat.append(computeFeatures_baseline(img))
 
             print('Extracting features for image #%d' % idx)
+
     """
     feat.shape=1x500    , her bir elemanı keypointx128 lik dizidir. (her elemanın descriptorx128 'inden dolayı)
     base_feat.shape=1x500 , her bir elemanı 1x192 lik dizidir. (3 tnae 64lük histogramdan dolayı)
     """
 
-    def compute_codebook(self,feat):
+    def compute_codebook(self, feat):
         """
 
         :param feat: SIFT's descriptors (feat.shape=1x500)
@@ -69,8 +72,7 @@ class Features:
             bow.append(bow_hist)
             if plot_it == True:
                 plot_it = False
-                self.plot_histogram(bow_hist,k)
-
+                self.plot_histogram(bow_hist, k)
 
         """bow.shape=1x500"""
         # Stack them together
@@ -82,7 +84,7 @@ class Features:
 
     # TF-IDF Features
     def compute_tfidf(self):
-        #first all_bow loading
+        # first all_bow loading
         all_bow = pickle.load(open("bow.pkl", "rb"))
         # td-idf weighting
         transformer = TfidfTransformer(smooth_idf=True)
@@ -96,21 +98,24 @@ class Features:
         print('TF-IDF features pickled!')
 
     # Baseline Features
-    def compute_baseline(self,base_feat):
+    def compute_baseline(self, base_feat):
         base_feat = np.vstack(base_feat)  # shape=500x192
 
         # pickle your features (baseline)
         pickle.dump(base_feat, open("base.pkl", "wb"))
         print('Baseline features pickled!')
 
-    def plot_histogram(self,bow_hist,k):
+    def plot_histogram(self, bow_hist, k):
 
-        bars = ['k=1','k=2','k=3','k=4','k=5','k=6','k=7','k=8','k=9','k=10','k=11','k=12','k=13','k=14','k=15','k=16',
-                'k=17','k=18','k=19','k=20','k=21','k=22','k=23','k=24','k=25','k=26','k=27','k=28','k=29','k=30',
-                'k=31','k=32','k=33','k=34','k=35','k=36','k=37','k=38','k=39','k=40','k=41','k=42','k=43','k=44','k=45',
-                'k=46','k=47','k=48','k=49','k=50']
+        bars = ['k=1', 'k=2', 'k=3', 'k=4', 'k=5', 'k=6', 'k=7', 'k=8', 'k=9', 'k=10', 'k=11', 'k=12', 'k=13', 'k=14',
+                'k=15', 'k=16',
+                'k=17', 'k=18', 'k=19', 'k=20', 'k=21', 'k=22', 'k=23', 'k=24', 'k=25', 'k=26', 'k=27', 'k=28', 'k=29',
+                'k=30',
+                'k=31', 'k=32', 'k=33', 'k=34', 'k=35', 'k=36', 'k=37', 'k=38', 'k=39', 'k=40', 'k=41', 'k=42', 'k=43',
+                'k=44', 'k=45',
+                'k=46', 'k=47', 'k=48', 'k=49', 'k=50']
         y = np.arange(len(bars))
-        plt.bar(y,bow_hist,color='g')
+        plt.bar(y, bow_hist, color='g')
         plt.xticks(y, bars)
         plt.savefig("results/histogram/normalized_hist1.png")
         plt.show()

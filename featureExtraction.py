@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     features = Features()
 
-    features.input_img(dbpath,feat,base_feat)
+    features.input_img(dbpath, feat, base_feat)
 
     features.compute_codebook(feat)
 
@@ -26,6 +26,3 @@ if __name__ == '__main__':
     features.compute_tfidf()
 
     features.compute_baseline(base_feat)
-
-
-
